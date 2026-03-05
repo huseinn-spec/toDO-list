@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>TASK SYSTEM</title>
+
+<style>
+
+body{
+background:#0a0a0a;
+font-family: "Courier New", monospace;
+color:#00ff9c;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.container{
+width:420px;
+background:#111;
+padding:30px;
+border-radius:8px;
+box-shadow:0 0 20px #00ff9c22;
+border:1px solid #00ff9c33;
+}
+
+h2{
+text-align:center;
+letter-spacing:2px;
+margin-bottom:20px;
+color:#00ff9c;
+text-shadow:0 0 5px #00ff9c;
+}
+
+.input-area{
+display:flex;
+gap:10px;
+}
+
+input{
+flex:1;
+padding:10px;
+background:#0a0a0a;
+border:1px solid #00ff9c33;
+color:#00ff9c;
+border-radius:5px;
+outline:none;
+}
+
+input:focus{
+box-shadow:0 0 10px #00ff9c55;
+}
+
+button{
+background:#00ff9c;
+border:none;
+padding:10px 15px;
+border-radius:5px;
+cursor:pointer;
+font-weight:bold;
+transition:0.2s;
+}
+
+button:hover{
+box-shadow:0 0 15px #00ff9c;
+transform:scale(1.05);
+}
+
+ul{
+list-style:none;
+padding:0;
+margin-top:20px;
+}
+
+li{
+background:#0f0f0f;
+border:1px solid #00ff9c22;
+padding:10px;
+margin-bottom:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-radius:5px;
+transition:0.2s;
+}
+
+li:hover{
+box-shadow:0 0 10px #00ff9c33;
+transform:translateX(5px);
+}
+
+.acil{
+border-left:4px solid red;
+color:#ff4d4d;
+text-shadow:0 0 5px red;
+}
+
+.tamamlandi{
+text-decoration:line-through;
+opacity:0.4;
+}
+
+.sil{
+background:#111;
+border:1px solid red;
+color:red;
+padding:4px 8px;
+border-radius:4px;
+cursor:pointer;
+}
+
+.sil:hover{
+box-shadow:0 0 10px red;
+}
+
+.sayac{
+margin-top:10px;
+font-size:12px;
+text-align:right;
+opacity:0.7;
+}
+
+.terminal{
+font-size:11px;
+opacity:0.5;
+margin-top:5px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>VOID TASK SYSTEM</h2>
+
+<div class="input-area">
+<input id="gorevInput" placeholder="task yaz...">
+<button id="ekleBtn">ADD</button>
+</div>
+
+<ul id="liste"></ul>
+
+<div class="sayac">
+TASK COUNT: <span id="gorevSayisi">0</span>
+</div>
+
+<div class="terminal">
+root@void:~/tasks
+</div>
+
+</div>
+
+<script>
+
+const input=document.getElementById("gorevInput")
+const btn=document.getElementById("ekleBtn")
+const liste=document.getElementById("liste")
+const sayac=document.getElementById("gorevSayisi")
+
+let gorevler=JSON.parse(localStorage.getItem("voidTasks")) || []
+
+function kaydet(){
+localStorage.setItem("voidTasks",JSON.stringify(gorevler))
+}
+
+function sayacGuncelle(){
+sayac.textContent=gorevler.length
+}
+
+function ciz(){
+
+liste.innerHTML=""
+
+gorevler.forEach((gorev,index)=>{
+
+const li=document.createElement("li")
+li.textContent=gorev.text
+
+if(gorev.text.toLowerCase().includes("acil")){
+li.classList.add("acil")
+}
+
+if(gorev.done){
+li.classList.add("tamamlandi")
+}
+
+li.onclick=()=>{
+gorev.done=!gorev.done
+kaydet()
+ciz()
+}
+
+const sil=document.createElement("button")
+sil.textContent="DEL"
+sil.className="sil"
+
+sil.onclick=(e)=>{
+e.stopPropagation()
+gorevler.splice(index,1)
+kaydet()
+ciz()
+}
+
+li.appendChild(sil)
+liste.appendChild(li)
+
+})
+
+sayacGuncelle()
+
+}
+
+function ekle(){
+
+const text=input.value.trim()
+
+if(text===""){
+alert("task boş")
+return
+}
+
+gorevler.push({
+text:text,
+done:false
+})
+
+input.value=""
+
+kaydet()
+ciz()
+
+}
+
+btn.onclick=ekle
+
+input.addEventListener("keypress",(e)=>{
+if(e.key==="Enter"){
+ekle()
+}
+})
+
+ciz()
+
+</script>
+
+</body>
+</html>
